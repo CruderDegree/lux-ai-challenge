@@ -1,4 +1,1 @@
-simple/errorlogs/
-simple/__pycache__/
-simple/replay.json
-simple/replays/
+*.tar.gz
