@@ -1,6 +1,8 @@
 from lux.game_objects import CityTile
 from lux.game_map import Cell
 from lux.game import Game
+from clusters.ClusterManager import ClusterManager
+from clusters.Cluster import Cluster
 
 class MapDataStrategy():
     """
@@ -18,5 +20,9 @@ class MapDataStrategy():
                 cell = game_state.map.get_cell(x, y)
                 if cell.has_resource():
                     self.resourceTiles.append(cell)
+                    if cell.pos not in ClusterManager.clusterPositions:
+                        newCluster : Cluster = Cluster(cell.pos, cell.resource, self.map)
+                        ClusterManager.clusters += [newCluster]
+                        ClusterManager.addClusterPositions(newCluster)
                 if (cell.citytile != None) and (cell.citytile.team == player_team):
                     self.playerCityTiles.append(cell.citytile)

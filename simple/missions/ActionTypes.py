@@ -1,0 +1,2 @@
+SETTLE = "settle"
+TRAVEL = "travel"
