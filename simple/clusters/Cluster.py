@@ -1,5 +1,7 @@
 from lux.game_map import Position, Cell, Resource
+from simple.MapDataStrategy import MapDataStrategy
 from simple.lux.game_map import DIRECTIONS, GameMap
+import math
 
 class Cluster():
     def __init__(self, initialPosition : Position, resource : Resource, map : GameMap) -> None:
@@ -46,3 +48,29 @@ class Cluster():
         if clearCellPositions != []:
             return min([position.distance_to(p) for p in clearCellPositions])
         return None
+    
+    def getOptimalHarvestPosition(self, mapData : MapDataStrategy, position : Position, space_left):
+        lowestDesireScore = math.inf 
+        lowestDesireScoreIdx = 0
+        for i in range(len(self.positions)):
+            desireScore = self.getDesireScore(mapData, self.positions[i], position, space_left)
+            if desireScore < lowestDesireScore:
+                lowestDesireScoreIdx = i
+        return self.positions[lowestDesireScoreIdx]
+        
+
+    def getDesireScore(self, mapData : MapDataStrategy, position : Position, workerPosition : Position, space_left):
+        if mapData.unitAtPosition(position):
+            return math.inf
+        maxHarvestableResources = min(20, mapData.map.get_cell_by_pos(position).resource.amount)
+        harvestableTiles = 1
+        directions = [DIRECTIONS.NORTH, DIRECTIONS.EAST, DIRECTIONS.SOUTH, DIRECTIONS.WEST]
+        for direction in directions:
+            new_position = position.translate(direction, 1)
+            new_cell = mapData.map.get_cell_by_pos(new_position)
+            if not mapData.unitAtPosition(position) and new_cell.resource is not None:
+                harvestableTiles += 1
+                maxHarvestableResources = min(maxHarvestableResources, new_cell.resource.amount)
+        maxHarvestPerTurn = harvestableTiles * maxHarvestableResources
+        return maxHarvestPerTurn/space_left + workerPosition.distance_to(position)
+

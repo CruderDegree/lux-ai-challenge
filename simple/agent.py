@@ -43,7 +43,9 @@ def agent(observation, configuration):
         if unit.is_worker() and unit.can_act():
             eprint("Worker {} can act".format(unit.pos))
             workerStrategy : WorkerStrategy = WorkerStrategy(unit, player, mapDataStrategy)
-            actions.append(workerStrategy.decide_action())
+            action = workerStrategy.decide_action()
+            if action is not None:
+                actions.append(action)
 
     # you can add debug annotations using the functions in the annotate object
     # actions.append(annotate.circle(0, 0))
